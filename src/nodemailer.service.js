@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
 const handlebars = require('handlebars');
 const dotenv = require('dotenv');
@@ -6,7 +7,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const getTemplate = (template) => {
-  return fs.readFileSync(path.join('./templates', `${template}.hbs`), 'utf8');
+  try {
+    return fs.readFileSync(
+      path.join(__dirname, `./templates/${template}.hbs`),
+      'utf8'
+    );
+  } catch (e) {
+    console.log(e);
+    throw Error(`Template not found`);
+  }
 };
 
 const transporter = nodemailer.createTransport({
@@ -20,15 +29,21 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = (options) => {
+  console.log(options);
   const { to, subject, params, template } = options;
   const htmlTemplate = handlebars.compile(getTemplate(template));
 
-  return transporter.sendMail({
-    from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
-    to,
-    subject,
-    html: htmlTemplate(params),
-  });
+  try {
+    return transporter.sendMail({
+      from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+      to,
+      subject,
+      html: htmlTemplate(params),
+    });
+  } catch (e) {
+    console.log(e);
+    throw Error(`Error sending email`);
+  }
 };
 
 exports.sendEmail = sendEmail;

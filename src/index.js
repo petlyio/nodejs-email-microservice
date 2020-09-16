@@ -5,10 +5,13 @@ module.exports = async (req, res) => {
   const payload = await json(req);
 
   if (!payload) {
-    throw Error(`The payload should not be empty`);
+    send(res, 400, { response: `The payload should not be empty` });
   }
 
-  sendEmail(payload);
-
-  send(res, 200, { response: `Message sent with success` });
+  try {
+    sendEmail(payload);
+    send(res, 200, { response: `Message sent with success` });
+  } catch (e) {
+    send(res, 400, { response: `Error sending email` });
+  }
 };

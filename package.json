@@ -1,10 +1,12 @@
 {
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "start": "micro"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
+    "handlebars": "^4.7.6",
     "micro": "^9.3.4",
     "nodemailer": "^6.4.11"
   }
